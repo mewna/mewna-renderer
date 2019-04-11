@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      # Git submodules
+      - run: git submodule sync --recursive
+      - run: git submodule update --init --recursive --remote
+
+      - run: docker build -t mewna/renderer:$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM .
+
+      - run: docker push mewna/renderer:$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM
