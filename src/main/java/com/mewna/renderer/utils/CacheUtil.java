@@ -8,7 +8,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,32 +44,6 @@ public final class CacheUtil {
         }
     }
     
-    /**
-     * Cache and return an image from a remote location specified by a valid
-     * URL.
-     *
-     * @param url The URL to retrieve from
-     *
-     * @return The cached image resource
-     */
-    public static CachedImage getRemoteImageResource(final String url) {
-        if(IMAGE_CACHE.containsKey(url)) {
-            return IMAGE_CACHE.get(url);
-        }
-        
-        try {
-            //LogHelper.log("INFO", String.format("Caching remote image resource: '%s'", url));
-            final BufferedImage image = ImageIO.read(new URL(url));
-            final CachedImage cachedImage = new CachedImage(System.currentTimeMillis(), url, image);
-            IMAGE_CACHE.put(url, cachedImage);
-            return cachedImage;
-        } catch(final IOException e) {
-            Sentry.capture(e);
-            throw new RuntimeException(e);
-        }
-    }
-    
-    @SuppressWarnings("WeakerAccess")
     @Value
     @RequiredArgsConstructor
     public static final class CachedImage {
