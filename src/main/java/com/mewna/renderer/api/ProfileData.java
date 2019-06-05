@@ -26,9 +26,9 @@ public class ProfileData {
     @JsonProperty
     private String aboutText;
     @JsonProperty
-    private long exp;
+    private long money;
     @JsonProperty
-    private long rank;
+    private String tato;
     @JsonProperty
     private long score;
 }

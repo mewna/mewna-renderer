@@ -1,5 +1,6 @@
 package com.mewna.renderer.utils;
 
+import java.math.BigDecimal;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -44,7 +45,35 @@ public final class Numbers {
         final String suffix = e.getValue();
         
         final long truncated = value / (divideBy / 10); //the number part of the output times 10
+        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
         final boolean hasDecimal = truncated < 100 && truncated / 10D != truncated / 10;
         return hasDecimal ? truncated / 10D + suffix : truncated / 10 + suffix;
+    }
+    
+    public static String formatBD(final BigDecimal value) {
+        final String[] suffixes = {null, "K", "M", "G", "T", "P", "E", "Z", "Y"};
+        final BigDecimal thousand = new BigDecimal("1000");
+        
+        BigDecimal finalValue = value;
+        BigDecimal remainder = null;
+        int divisions = 0;
+        
+        BigDecimal[] division;
+        while(finalValue.compareTo(thousand) >= 0) {
+            division = finalValue.divideAndRemainder(thousand);
+            finalValue = division[0];
+            remainder = division[1];
+            divisions++;
+        }
+        if(divisions == 0) {
+            return value.toString();
+        }
+        
+        try {
+            final String suffix = suffixes[divisions];
+            return finalValue + "." + String.format("%03d", remainder.intValue()) + suffix;
+        } catch(final ArrayIndexOutOfBoundsException ignored) {
+            return finalValue.toString();
+        }
     }
 }

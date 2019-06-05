@@ -19,6 +19,7 @@ import java.awt.image.BufferedImageOp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.AttributedString;
 import java.util.List;
 import java.util.*;
@@ -174,69 +175,41 @@ public final class CardRenderer {
             // Stats
             final FontMetrics statsFontSmallerMetrics = g2.getFontMetrics(ABOUT_ME_FONT);
             
-            final String globalLevel = Numbers.format(LevelUtils.xpToLevel(profileData.exp()));
-            final String globalLevelLabel = "GLOBAL LEVEL";
-            final int globalLevelLabelWidth = statsFontSmallerMetrics.stringWidth(globalLevelLabel);
+            final String money = Numbers.format(profileData.money());
+            final String moneyLabel = "MONEY";
+            final int moneyLabelWidth = statsFontSmallerMetrics.stringWidth(moneyLabel);
             
-            final long globalRankTmp = profileData.rank();
-            final String globalRank = globalRankTmp == -1 ? "UNRANKED" : '#' + Numbers.format(globalRankTmp);
-            final String globalRankLabel = "GLOBAL RANK";
-            final int globalRankLabelWidth = statsFontSmallerMetrics.stringWidth(globalRankLabel);
+            final String tato = Numbers.formatBD(new BigDecimal(profileData.tato()));
+            final String tatoLabel = "TATO";
+            final int tatoLabelWidth = statsFontSmallerMetrics.stringWidth(tatoLabel);
             
             final String score = Numbers.format(profileData.score());
             final String scoreLabel = "OVERALL SCORE";
             final int scoreLabelWidth = statsFontSmallerMetrics.stringWidth(scoreLabel);
             
             // Ensure everything is roughly the same size
-            final int allLabelSizes = Math.max(scoreLabelWidth, Math.max(globalRankLabelWidth, globalLevelLabelWidth));
+            final int allLabelSizes = Math.max(scoreLabelWidth, Math.max(tatoLabelWidth, moneyLabelWidth));
             
             // 32, 423
-            // Global level
-            drawCenteredString(g2, globalLevel, new Rectangle(32, 423, allLabelSizes,
+            // Money
+            drawCenteredString(g2, money, new Rectangle(32, 423, allLabelSizes,
                     STATS_FONT.getSize()), STATS_FONT, PRIMARY_THEME_COLOUR);
-            drawCenteredString(g2, globalLevelLabel, new Rectangle(32, 423, allLabelSizes,
+            drawCenteredString(g2, moneyLabel, new Rectangle(32, 423, allLabelSizes,
                     STATS_FONT.getSize() * 2 + ABOUT_ME_FONT.getSize()), ABOUT_ME_FONT, Color.WHITE);
             
             // 234, 423
-            // Global rank
-            final AttributedString rankString = new AttributedString(globalRank);
-            if(globalRankTmp > 0) {
-                rankString.addAttribute(TextAttribute.FOREGROUND, Color.WHITE, 0, 1);
-                rankString.addAttribute(TextAttribute.FOREGROUND, PRIMARY_THEME_COLOUR, 1, globalRank.length());
-            } else {
-                rankString.addAttribute(TextAttribute.FOREGROUND, PRIMARY_THEME_COLOUR);
-            }
-            drawCenteredString(g2, globalRank, rankString, new Rectangle(300 - allLabelSizes / 2, 423, allLabelSizes,
-                    STATS_FONT.getSize()), STATS_FONT);
-            drawCenteredString(g2, globalRankLabel, new Rectangle(300 - allLabelSizes / 2, 423, allLabelSizes,
+            // Tato
+            drawCenteredString(g2, tato, new Rectangle(300 - allLabelSizes / 2, 423, allLabelSizes,
+                    STATS_FONT.getSize()), STATS_FONT, PRIMARY_THEME_COLOUR);
+            drawCenteredString(g2, tatoLabel, new Rectangle(300 - allLabelSizes / 2, 423, allLabelSizes,
                     STATS_FONT.getSize() * 2 + ABOUT_ME_FONT.getSize()), ABOUT_ME_FONT, Color.WHITE);
             
             // 435, 423
-            // Global score
+            // Score
             drawCenteredString(g2, score, new Rectangle(568 - allLabelSizes, 423, allLabelSizes,
                     STATS_FONT.getSize()), STATS_FONT, PRIMARY_THEME_COLOUR);
             drawCenteredString(g2, scoreLabel, new Rectangle(568 - allLabelSizes, 423, allLabelSizes,
                     STATS_FONT.getSize() * 2 + ABOUT_ME_FONT.getSize()), ABOUT_ME_FONT, Color.WHITE);
-            
-            // XP bar
-            // 32, 519
-            // 536x35
-            final long userXp = profileData.exp();
-            final long userLevel = LevelUtils.xpToLevel(userXp);
-            final long userLevelXp = LevelUtils.fullLevelToXp(userLevel);
-            final long nextLevel = userLevel + 1;
-            final long nextLevelXp = LevelUtils.fullLevelToXp(nextLevel);
-            final long xpNeeded = LevelUtils.nextLevelXp(userXp);
-            final long nextXpTotal = nextLevelXp - xpNeeded;
-            g2.setColor(SIXTY_SEVEN_PERCENT_OPAQUE_BLACK);
-            g2.fillRect(32, 519, 536, 35);
-            // calc. bar size
-            final int barWidth = (int) (532 * ((userXp - userLevelXp) / (double) (nextLevelXp - userLevelXp)));
-            g2.setColor(PRIMARY_THEME_COLOUR);
-            g2.fillRect(34, 521, barWidth, 31);
-            // XP text
-            drawCenteredString(g2, String.format("%s / %s EXP", Numbers.format(nextXpTotal), Numbers.format(nextLevelXp)),
-                    new Rectangle(32, 519, 536, 35), STATS_FONT_SMALLER, Color.WHITE);
             
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(card, "png", baos);
