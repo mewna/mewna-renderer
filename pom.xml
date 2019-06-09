@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <singyeong.version>ab8e436</singyeong.version>
+        <singyeong.version>75ab2c5</singyeong.version>
 
         <jedis.version>2.9.0</jedis.version>
         <jackson.version>2.9.6</jackson.version>
